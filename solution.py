@@ -47,7 +47,7 @@ def grid_values(grid):
     i = 0
     for i in range(len(grid)):
        assign_value(sudoku_dict, boxes[i], grid[i])
-    return sudoku_dict # courseware lesson 5.4
+    return sudoku_dict 
 
 def display(values):
     """
