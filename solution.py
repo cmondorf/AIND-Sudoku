@@ -6,10 +6,6 @@ def assign_value(values, box, value):
     Assigns a value to a given box. If it updates the board record it.
     """
 
-    # Don't waste memory appending actions that don't actually change any values
-
-    # print(values) printing empty dictionary
-
     if values[box] == value:
         return values
 
@@ -26,22 +22,14 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-
+    print('naked twins')
+    pass
     # Find all instances of naked twins
     # Eliminate the naked twins as possibilities for their peers
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
     return [s+t for s in A for t in B] # source: courseware lesson 5.4
-
-rows = 'ABCDEFGHI'
-cols = '123456789'
-
-boxes = cross(rows, cols)
-# print(boxes) boxes are being created correctly
-
-
-
 
 def grid_values(grid):
     """
@@ -53,19 +41,25 @@ def grid_values(grid):
             Keys: The boxes, e.g., 'A1'
             Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
     """
+
+    # all other fn get values as input, and so presumeably update with the assign fn above.
+    #print('grid_values')
+    rows = 'ABCDEFGHI'
+    cols = '123456789'
+    boxes = cross(rows, cols)
     sudoku_dict = {}
     i = 0
     for i in range(len(grid)):
         # identify empties and enter string of digits if empty
         if grid[i] == ".":
             sudoku_dict[boxes[i]] = '123456789'
+            #values = assign_value(values, boxes[i], '123456789')
         else:
             sudoku_dict[boxes[i]] = grid[i]
+            #values = assign_value(values, boxes[i], grid[i])
     return sudoku_dict
 
-grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
-values = grid_values(grid)
-print(values)
+
 
 
 def display(values):
@@ -74,19 +68,23 @@ def display(values):
     Args:
         values(dict): The sudoku in dictionary form
     """
-    #print(values) # values here is type None
+    # print(values) # values here is type None
     pass
 
 def eliminate(values):
+    print("Eliminate")
     pass
 
 def only_choice(values):
+    print('only_choice')
     pass
 
 def reduce_puzzle(values):
+    print('reduce_puzzle')
     pass
 
 def search(values):
+    print('search')
     pass
 
 def solve(grid):
@@ -98,6 +96,15 @@ def solve(grid):
     Returns:
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
+
+
+    values = grid_values(grid)
+    #print(values)
+
+    #print('solve')
+
+
+
 
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
