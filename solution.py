@@ -7,6 +7,9 @@ def assign_value(values, box, value):
     """
 
     # Don't waste memory appending actions that don't actually change any values
+
+    # print(values) printing empty dictionary
+
     if values[box] == value:
         return values
 
@@ -35,14 +38,10 @@ rows = 'ABCDEFGHI'
 cols = '123456789'
 
 boxes = cross(rows, cols)
+# print(boxes) boxes are being created correctly
 
-row_units = [cross(r, cols) for r in rows]
 
-column_units = [cross(rows, c) for c in cols]
 
-square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-
-unitlist = row_units + column_units + square_units
 
 def grid_values(grid):
     """
@@ -57,8 +56,17 @@ def grid_values(grid):
     sudoku_dict = {}
     i = 0
     for i in range(len(grid)):
-       assign_value(sudoku_dict, boxes[i], grid[i])
+        # identify empties and enter string of digits if empty
+        if grid[i] == ".":
+            sudoku_dict[boxes[i]] = '123456789'
+        else:
+            sudoku_dict[boxes[i]] = grid[i]
     return sudoku_dict
+
+grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+values = grid_values(grid)
+print(values)
+
 
 def display(values):
     """
@@ -66,6 +74,7 @@ def display(values):
     Args:
         values(dict): The sudoku in dictionary form
     """
+    #print(values) # values here is type None
     pass
 
 def eliminate(values):
