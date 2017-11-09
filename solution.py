@@ -14,6 +14,8 @@ def assign_value(values, box, value):
         assignments.append(values.copy())
     return values
 
+
+
 def naked_twins(values):
     """Eliminate values using the naked twins strategy.
     Args:
@@ -30,6 +32,16 @@ def naked_twins(values):
 def cross(A, B):
     "Cross product of elements in A and elements in B."
     return [s+t for s in A for t in B] # source: courseware lesson 5.4
+
+rows = 'ABCDEFGHI'
+cols = '123456789'
+boxes = cross(rows, cols)
+row_units = [cross(r, cols) for r in rows]
+column_units = [cross(rows, c) for c in cols]
+square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
+unitlist = row_units + column_units + square_units
+units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
+peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 
 def grid_values(grid):
     """
@@ -72,12 +84,36 @@ def display(values):
     pass
 
 def eliminate(values):
-    print("Eliminate")
-    pass
+    # if a box's peers have a value, then the box can't containt them either
+    # flipside of this is that if a box has a value, all peers cannot have that value
+
+    # iterate over all values
+    for key in values:
+        if len(values[key])==1:
+        # if box has only one value, move on
+            pass
+        else:
+        # if box has more than one value, look through all peers and eliminate those values
+            value_list = '123456789'
+            for peer in peers[key]:
+                if len(values[peer]) == 1:
+                    if values[peer] in value_list:
+                        value_list = list(value_list)
+                        value_list.remove(values[peer])
+                        value_list = ''.join(value_list)
+                        assign_value(values, key, value_list)
+    return values
+
 
 def only_choice(values):
-    print('only_choice')
-    pass
+    for unit in unitlist:
+        for digit in '123456789':
+            dplaces = [box for box in unit if digit in values[box]]
+            if len(dplaces) == 1:
+                print(dplaces)
+                print(digit)
+                values[dplaces[0]] = digit
+    return values
 
 def reduce_puzzle(values):
     print('reduce_puzzle')
@@ -96,9 +132,13 @@ def solve(grid):
     Returns:
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
+    #convert string to dictionary
+    values = grid_values(grid) # board in dictionary form, empty boxes have full range of values
+    values = eliminate(values) # empty boxes have their values pruned to reflect the constraints in peers
+    print(values)
+    values = only_choice(values)
+    print(values)
 
-
-    values = grid_values(grid)
     #print(values)
 
     #print('solve')
