@@ -88,21 +88,33 @@ def eliminate(values):
     # flipside of this is that if a box has a value, all peers cannot have that value
 
     # iterate over all values
-    for key in values:
-        if len(values[key])==1:
-        # if box has only one value, move on
-            pass
-        else:
-        # if box has more than one value, look through all peers and eliminate those values
-            value_list = '123456789'
-            for peer in peers[key]:
-                if len(values[peer]) == 1:
-                    if values[peer] in value_list:
-                        value_list = list(value_list)
-                        value_list.remove(values[peer])
-                        value_list = ''.join(value_list)
-                        assign_value(values, key, value_list)
+    # for key in values:
+    #     if len(values[key])==1:
+    #     # if box has only one value, move on
+    #         pass
+    #     else:
+    #     # if box has more than one value, look through all peers and eliminate those values
+    #         value_list = '123456789'
+    #
+    #         # there is an error in when the assignment is happening here.
+    #
+    #         for peer in peers[key]:
+    #             if len(values[peer]) == 1:
+    #                 if values[peer] in value_list:
+    #                     value_list = list(value_list)
+    #                     value_list.remove(values[peer])
+    #                     value_list = ''.join(value_list)
+    #                     assign_value(values, key, value_list)
+    # return values
+
+    solved_values = [box for box in values.keys() if len(values[box]) == 1]
+    for box in solved_values:
+        digit = values[box]
+        for peer in peers[box]:
+            values[peer] = values[peer].replace(digit,'')
     return values
+
+
 
 
 def only_choice(values):
@@ -110,18 +122,45 @@ def only_choice(values):
         for digit in '123456789':
             dplaces = [box for box in unit if digit in values[box]]
             if len(dplaces) == 1:
-                print(dplaces)
-                print(digit)
-                values[dplaces[0]] = digit
+                assign_value(values, dplaces[0], digit)
     return values
 
+
+
+
 def reduce_puzzle(values):
-    print('reduce_puzzle')
-    pass
+    stalled = False
+    while not stalled:
+        # Check how many boxes have a determined value
+        solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
+        # Use the Eliminate Strategy
+        values = eliminate(values)
+        # Use the Only Choice Strategy
+        values = only_choice(values)
+        # Check how many boxes have a determined value, to compare
+        solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
+        # If no new values were added, stop the loop.
+        stalled = solved_values_before == solved_values_after
+        # Sanity check, return False if there is a box with zero available values:
+        if len([box for box in values.keys() if len(values[box]) == 0]):
+            return False
+    return values
 
 def search(values):
-    print('search')
-    pass
+    values = reduce_puzzle(values)
+    if values is False:
+        return False ## Failed earlier
+    if all(len(values[s]) == 1 for s in boxes):
+        return values ## Solved!
+    # Choose one of the unfilled squares with the fewest possibilities
+    n,s = min((len(values[s]), s) for s in boxes if len(values[s]) > 1)
+    # Now use recurrence to solve each one of the resulting sudokus, and
+    for value in values[s]:
+        new_sudoku = values.copy()
+        new_sudoku[s] = value
+        attempt = search(new_sudoku)
+        if attempt:
+            return attempt
 
 def solve(grid):
     """
@@ -133,15 +172,9 @@ def solve(grid):
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
     #convert string to dictionary
-    values = grid_values(grid) # board in dictionary form, empty boxes have full range of values
-    values = eliminate(values) # empty boxes have their values pruned to reflect the constraints in peers
-    print(values)
-    values = only_choice(values)
-    print(values)
-
-    #print(values)
-
-    #print('solve')
+    values = grid_values(grid)
+    values = reduce_puzzle(values)
+    values = search(values)
 
 
 
