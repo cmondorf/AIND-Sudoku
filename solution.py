@@ -27,6 +27,7 @@ def naked_twins(values):
     print('naked twins')
     pass
     # Find all instances of naked twins
+
     # Eliminate the naked twins as possibilities for their peers
 
 def cross(A, B):
@@ -39,9 +40,13 @@ boxes = cross(rows, cols)
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-unitlist = row_units + column_units + square_units
+diagonal_units = [['A1','B2','C3','D4','E5','F6','G7','H8','I9'],['A9','B8','C7','D6','E5','F4','G3','H2', 'I1']]
+unitlist = row_units + column_units + square_units + diagonal_units
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
+# currently units is a dictionary with a list of boxes in the units each square belongs to
+# add unit for diagonals
 peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
+# make sure peers are updated to include diagonal peers
 
 def grid_values(grid):
     """
@@ -172,6 +177,7 @@ def solve(grid):
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
     #convert string to dictionary
+    print(units['A1'])
     values = grid_values(grid)
     values = reduce_puzzle(values)
     values = search(values)
