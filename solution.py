@@ -25,10 +25,25 @@ def naked_twins(values):
         the values dictionary with the naked twins eliminated from peers.
     """
     print('naked twins')
-    pass
-    # Find all instances of naked twins
 
-    # Eliminate the naked twins as possibilities for their peers
+    # check in each unit
+    for unit in unitlist:
+        for box in unit:
+            purge_list = []
+            if len(values[box]) == 2: #check for twin
+                for peer in peers[box]:
+                    if values[peer] == values[box]:
+                        purge_list += values[box]
+                        # run purge
+
+                        print(purge_list)
+    # check each box for two values
+    # if two values found, check if unique
+    # if unique, purge from rest of unit
+
+
+
+    return values
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
@@ -139,7 +154,10 @@ def reduce_puzzle(values):
         # Check how many boxes have a determined value
         solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
         # Use the Eliminate Strategy
+
         values = eliminate(values)
+        values = naked_twins(values)  ### Where should this go?
+
         # Use the Only Choice Strategy
         values = only_choice(values)
         # Check how many boxes have a determined value, to compare
@@ -177,8 +195,8 @@ def solve(grid):
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
     #convert string to dictionary
-    print(units['A1'])
     values = grid_values(grid)
+
     values = reduce_puzzle(values)
     values = search(values)
 
