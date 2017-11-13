@@ -24,26 +24,47 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-    print('naked twins')
 
-    # check in each unit
+    print(values)
+    # iterate over units
     for unit in unitlist:
+        twin_list = [] # placed here so they are now at the level of the
+        purge_list = []
+        # in each unit, extract list of twins, values in twins
+
         for box in unit:
-            purge_list = []
             if len(values[box]) == 2: #check for twin
                 for peer in peers[box]:
-                    if values[peer] == values[box]:
-                        purge_list += values[box]
-                        # run purge
+                    if values[peer] == values[box]: # confirms this is a twin
+                        if values[peer] not in purge_list:
+                            purge_list.append(values[peer])
+                        if peer not in  twin_list:
+                            twin_list.append(peer)
+                        if box not in twin_list:
+                            twin_list.append(box)
 
-                        print(purge_list)
-    # check each box for two values
-    # if two values found, check if unique
-    # if unique, purge from rest of unit
-
-
-
+        if not purge_list:
+            pass
+        else:
+            # flatten purge list
+            # source for code below: https://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
+            purge_list = list(set([item for sublist in purge_list for item in sublist]))
+            # code above is an abomination and should be refactored
+            for item in purge_list:
+                for peer in peers[box]:
+                    if peer not in twin_list:
+                        if (item in values[peer]) and (len(values[peer]) > 1):
+                            value = list(values[peer])
+                            #print("purge list: " + str(item) + " box: "+ str(values[peer]))
+                            value.remove(item)
+                            values[peer] = ''.join(values[peer])
+                            #print(values[peer])
+                            value = ''.join(value)
+                            #print('value: ' + value)
+                            assign_value(values, peer, value)
+    print(values)
     return values
+
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
@@ -156,7 +177,6 @@ def reduce_puzzle(values):
         # Use the Eliminate Strategy
 
         values = eliminate(values)
-        values = naked_twins(values)  ### Where should this go?
 
         # Use the Only Choice Strategy
         values = only_choice(values)
@@ -196,6 +216,7 @@ def solve(grid):
     """
     #convert string to dictionary
     values = grid_values(grid)
+
 
     values = reduce_puzzle(values)
     values = search(values)
