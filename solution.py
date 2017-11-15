@@ -24,45 +24,44 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-
-    print(values)
-    # iterate over units
+    unit_dict = {}
+    i = 0
     for unit in unitlist:
-        twin_list = [] # placed here so they are now at the level of the
+        twin_list = []
         purge_list = []
-        # in each unit, extract list of twins, values in twins
-
         for box in unit:
-            if len(values[box]) == 2: #check for twin
-                for peer in peers[box]:
-                    if values[peer] == values[box]: # confirms this is a twin
-                        if values[peer] not in purge_list:
-                            purge_list.append(values[peer])
-                        if peer not in  twin_list:
-                            twin_list.append(peer)
-                        if box not in twin_list:
-                            twin_list.append(box)
-
-        if not purge_list:
+            if len(values[box]) == 2:
+                # how to find if this value repeats in the unit?
+                for box_2 in unit:
+                    if box == box_2:
+                        pass
+                    else:
+                        if values[box_2] == values[box]:
+                            twin_list = [box, box_2]
+                            purge_list = [values[box]]
+                            unit_dict[i] = [twin_list, purge_list]
+        i += 1
+    # necessary information extracted
+    # now to update board
+    i = 0 # reset counter
+    for unit in unitlist:
+        if i not in unit_dict:
+            i += 1
             pass
         else:
-            # flatten purge list
-            # source for code below: https://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
-            purge_list = list(set([item for sublist in purge_list for item in sublist]))
-            # code above is an abomination and should be refactored
-            for item in purge_list:
-                for peer in peers[box]:
-                    if peer not in twin_list:
-                        if (item in values[peer]) and (len(values[peer]) > 1):
-                            value = list(values[peer])
-                            #print("purge list: " + str(item) + " box: "+ str(values[peer]))
-                            value.remove(item)
-                            values[peer] = ''.join(values[peer])
-                            #print(values[peer])
-                            value = ''.join(value)
-                            #print('value: ' + value)
-                            assign_value(values, peer, value)
-    print(values)
+            for box in unit:
+                if box in unit_dict[i][0]:
+                    pass
+                else:
+                    if len(values[box]) > 1 and (unit_dict[i][1][0] or unit_dict[i][1][1] in values[box]):
+                        container = list(values[box])
+
+                        if unit_dict[i][1][0][0] in container:
+                            container.remove(unit_dict[i][1][0][0])
+                        if unit_dict[i][1][0][1] in container:
+                            container.remove(unit_dict[i][1][0][1])
+                        assign_value(values, box, ''.join(container))
+            i += 1
     return values
 
 
