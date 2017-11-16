@@ -176,7 +176,7 @@ def reduce_puzzle(values):
         # Use the Eliminate Strategy
 
         values = eliminate(values)
-
+        values = naked_twins(values)
         # Use the Only Choice Strategy
         values = only_choice(values)
         # Check how many boxes have a determined value, to compare
@@ -219,6 +219,7 @@ def solve(grid):
 
     values = reduce_puzzle(values)
     values = search(values)
+    return values
 
 
 
